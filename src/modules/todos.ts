@@ -2,7 +2,6 @@ import { dataType } from "../types/datatype";
 
 class Data {
     data: dataType[] = [];
-
     addData(UserData: dataType) {
         this.data.push(UserData)
     }
@@ -14,7 +13,6 @@ class Data {
     }
     deleteData(id: number) {
         let find_data = this.data.filter((v) => v.id == id);
-
         let index = this.data.indexOf(find_data[0]);
         delete this.data[index] //null
         this.data = this.data.filter((v) => v != null)
