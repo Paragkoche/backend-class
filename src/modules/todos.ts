@@ -1,28 +1,36 @@
+import { conn } from "../db/conn";
 import { dataType } from "../types/datatype";
 
 class Data {
     data: dataType[] = [];
-    addData(UserData: dataType) {
-        this.data.push(UserData)
+    async addData(UserData: dataType) {
+        await conn.query(`INSERT INTO "Todos"("message","completeON") VALUES($1,$2)`, [UserData.message, UserData.completeOn]);
+        await conn.query("COMMIT")
+        // this.data.push(UserData)
     }
-    updateData(id: number, UpdateData: dataType) {
-        let find_data = this.data.filter((v) => v.id == id);
-        let index = this.data.indexOf(find_data[0]);
-        this.data[index] = { id: find_data[0].id, ...UpdateData };
-        return this.data[index]
+    async updateData(id: number, UpdateData: dataType) {
+        await conn.query(`UPDATE "Todos" SET message=$1, "completeON"=$2 WHERE "Id"=$3`, [UpdateData.message, UpdateData.completeOn, id])
+        await conn.query("COMMIT")
+        return (await conn.query(`SELECT * FROM public."Todos" WHERE "Id"=$1`, [id])).rows[0];
     }
-    deleteData(id: number) {
-        let find_data = this.data.filter((v) => v.id == id);
-        let index = this.data.indexOf(find_data[0]);
-        delete this.data[index] //null
-        this.data = this.data.filter((v) => v != null)
+    async deleteData(id: number) {
+        await conn.query(`DELETE FROM "Todos" WHERE "Id"=$1`, [id])
+        await conn.query("COMMIT")
+        return "ok"
 
     }
-    getData() {
-        return this.data
+    async getData() {
+        let data = await conn.query(`SELECT * FROM public."Todos"`);
+
+
+        return data.rows
     }
-    getDataById(id: number) {
-        return this.data.filter((v) => v.id == id)[0]
+    async getDataById(id: number) {
+        let data = await conn.query(`SELECT * FROM public."Todos" WHERE "Id"=$1`, [id]);
+
+
+        return data.rows[0]
+
     }
 }
 
