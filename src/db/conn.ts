@@ -1,9 +1,3 @@
-import { Pool } from "pg";
+import mongoose from 'mongoose';
 
-export const conn = new Pool({
-    port: 5432,
-    database: "Todos",
-    password: "root",
-    host: "127.0.0.1",
-    user: "postgres"
-})
+export const conn = async () => await mongoose.connect("mongodb://127.0.0.1:27017/todo")

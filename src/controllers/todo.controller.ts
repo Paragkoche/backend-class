@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
 import pgtypes from "pg-types"
-import { data } from "../modules/todos";
+import todos from "../modules/todos";
 
 
 
 export const GetTodo = async (req: Request, res: Response) => {
 
-    return res.json(await data.getData());
+    return res.json(await todos.find());
 }
 export const CreateTodo = async (req: Request, res: Response) => {
     const body = req.body;
@@ -26,13 +26,13 @@ export const CreateTodo = async (req: Request, res: Response) => {
     let _data = { ...body, }
 
 
-    await data.addData(_data)
+    await todos.create({ ..._data });
     return res.json(_data)
 }
 export const UpdateTodo = async (req: Request, res: Response) => {
     console.log("hi");
 
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const body = req.body;
     if (!body.completeOn || !body.message) {
         return res.status(404).send("data not valid")
@@ -44,17 +44,17 @@ export const UpdateTodo = async (req: Request, res: Response) => {
     if ((typeof body.message !== "string")) {
         return res.status(404).send("data not valid")
     }
-    const updateData = await data.updateData(id, body)
+    const updateData = await todos.updateOne({ _id: id }, body);
     return res.json(updateData)
 }
 
 export const DeleteTodo = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    await data.deleteData(id)
+    const id = req.params.id;
+    await todos.deleteOne({ _id: id })
     return res.send("Data delete");
 }
 
 export const getDataById = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    return res.json(await data.getDataById(id) || "not valid")
+    const id = req.params.id;
+    return res.json(await todos.findById(id) || "not valid")
 }
